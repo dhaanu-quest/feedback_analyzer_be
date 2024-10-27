@@ -1,4 +1,4 @@
-require('dotenv').config(); 
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/userModel');
@@ -7,6 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 class UserFunctions {
 
     async createNewUser({ email, password }) {
+        console.log("UserFunctions: createNewUser");
+
         try {
             const existingUser = await UserModel.findOne({ email });
             if (existingUser) {
@@ -48,6 +50,8 @@ class UserFunctions {
     }
 
     async checkUserSignIn({ email, password }) {
+        console.log("UserFunctions: checkUserSignIn");
+
         try {
             const user = await UserModel.findOne({ email });
             if (!user) {
@@ -71,7 +75,7 @@ class UserFunctions {
                 }
             }
 
-            const token = jwt.sign({ userId: user.userId, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7h' });           
+            const token = jwt.sign({ userId: user.userId, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7h' });
 
             return {
                 status: 200,

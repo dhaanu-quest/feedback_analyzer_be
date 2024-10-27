@@ -6,6 +6,7 @@ class IntegrationFunctions {
     // both jira and clickup tested
 
     async addJiraKeys({ userId, key, domain, apiToken }) {
+        console.log("IntegrationFunctions: addJiraKeys");
         try {
 
             const jiraKeys = await IntegrationModel.create({
@@ -18,8 +19,6 @@ class IntegrationFunctions {
                 },
                 userId
             })
-
-            console.log("JIRA integration is successful");
 
             return {
                 status: 200,
@@ -42,6 +41,8 @@ class IntegrationFunctions {
     }
 
     async addClickupKeys({ userId, listId, apiKey }) {
+        console.log("IntegrationFunctions: addClickupKeys");
+
         try {
 
             const clickupKeys = await IntegrationModel.create({
@@ -53,8 +54,6 @@ class IntegrationFunctions {
                 },
                 userId
             })
-
-            console.log("CLICKUP integration is successful");
 
             return {
                 status: 200,
@@ -76,6 +75,8 @@ class IntegrationFunctions {
     }
 
     async createJiraIssue({ userId, email, feedback }) {
+        console.log("IntegrationFunctions: createJiraIssue");
+
         try {
 
             const getAuthKeys = await IntegrationModel.findOne({
@@ -116,7 +117,6 @@ class IntegrationFunctions {
                 }
             });
 
-            console.log("Issue created:", response.data.key);
             return response.data.key;
         } catch (error) {
             console.log(error)
@@ -131,6 +131,8 @@ class IntegrationFunctions {
     }
 
     async createClickUpTask({ userId, feedback }) {
+        console.log("IntegrationFunctions: createClickUpTask");
+
         try {
 
             const getAuthKeys = await IntegrationModel.findOne({
@@ -161,7 +163,6 @@ class IntegrationFunctions {
                 }
             });
 
-            console.log('Task created successfully:', response.data);
             return response.data;
         } catch (error) {
             console.log('Error creating task:', error.response ? error.response.data : error.message);
@@ -176,10 +177,10 @@ class IntegrationFunctions {
     }
 
     async getIntegrationData({ userId }) {
+        console.log("IntegrationFunctions: getIntegrationData");
+
         try {
-            console.log(userId)
             const data = await IntegrationModel.find({ userId })
-            console.log(data)
             return {
                 status: 200,
                 json: {

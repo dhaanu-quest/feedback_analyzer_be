@@ -2,6 +2,8 @@ const axios = require('axios');
 
 class AIFunctions {
     async askAI({ model, messages, max_tokens, temperature, response_format, headers }) {
+        console.log("AIFunctions: askAI");
+
         try {
             const response = await axios.post(
                 'https://api.openai.com/v1/chat/completions',
