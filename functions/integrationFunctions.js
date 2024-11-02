@@ -76,11 +76,11 @@ class IntegrationFunctions {
 
     async createJiraIssue({ userId, email, feedback }) {
         console.log("IntegrationFunctions: createJiraIssue");
-
         try {
 
             const getAuthKeys = await IntegrationModel.findOne({
-                userId: userId
+                userId: userId,
+                integrationName: 'JIRA'
             })
 
             if (!getAuthKeys) {
@@ -93,13 +93,13 @@ class IntegrationFunctions {
                 }
             }
 
-            const jiraBaseUrl = getAuthKeys?.jiraDomain;
+            const jiraBaseUrl = getAuthKeys?.auth?.jiraDomain;
             const apiEndpoint = `${jiraBaseUrl}/rest/api/2/issue`;
 
             const issueData = {
                 fields: {
                     project: {
-                        key: getAuthKeys?.jiraKey
+                        key: getAuthKeys?.auth?.jiraKey
                     },
                     issuetype: {
                         name: "Task"
@@ -109,15 +109,20 @@ class IntegrationFunctions {
                 }
             };
 
-
             const response = await axios.post(apiEndpoint, issueData, {
                 headers: {
-                    Authorization: `Basic ${Buffer.from(`${email}:${getAuthKeys?.jiraToken}`).toString("base64")}`,
+                    Authorization: `Basic ${Buffer.from(`${email}:${getAuthKeys?.auth?.jiraToken}`).toString("base64")}`,
                     "Content-Type": "application/json"
                 }
             });
 
-            return response.data.key;
+            return {
+                status: 201,
+                json: {
+                    success: true,
+                    data: response.data.key
+                },
+            }
         } catch (error) {
             console.log(error)
             return {
@@ -136,7 +141,8 @@ class IntegrationFunctions {
         try {
 
             const getAuthKeys = await IntegrationModel.findOne({
-                userId: userId
+                userId: userId,
+                integrationName: 'CLICKUP'
             })
 
             if (!getAuthKeys) {
@@ -149,7 +155,7 @@ class IntegrationFunctions {
                 }
             }
 
-            const url = `https://api.clickup.com/api/v2/list/${getAuthKeys?.listId}/task`;
+            const url = `https://api.clickup.com/api/v2/list/${getAuthKeys?.auth?.clickupListId}/task`;
 
             const body = {
                 name: feedback.summary,
@@ -158,14 +164,20 @@ class IntegrationFunctions {
 
             const response = await axios.post(url, body, {
                 headers: {
-                    'Authorization': getAuthKeys?.apiKey,
+                    'Authorization': getAuthKeys?.auth?.clickupAPIKey,
                     'Content-Type': 'application/json'
                 }
             });
 
-            return response.data;
+            return {
+                status: 201,
+                json: {
+                    success: true,
+                    data: response.data,
+                },
+            }
         } catch (error) {
-            console.log('Error creating task:', error.response ? error.response.data : error.message);
+            console.log('Error creating task:', error);
             return {
                 status: 500,
                 json: {
